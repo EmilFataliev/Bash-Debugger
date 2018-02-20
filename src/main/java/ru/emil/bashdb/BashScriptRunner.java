@@ -1,12 +1,14 @@
 package ru.emil.bashdb;
 
-
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,36 +16,43 @@ class BashScriptRunner {
 
   private static final Logger logger = LoggerFactory.getLogger(BashScriptRunner.class);
 
-  public static void run(String script) {
+  private final String bashEnvironment;
+  private final String scriptPath;
+
+  /* package private */ BashScriptRunner(String bashEnviroment, String scriptPath) {
+    this.bashEnvironment = bashEnviroment;
+    this.scriptPath = scriptPath;
+  }
+
+  private String readScript() throws IOException {
+    Path path = Paths.get(scriptPath);
+    StringBuilder script = new StringBuilder();
+    Stream<String> lines = Files.lines(path);
+    lines.forEach(line -> script.append(line).append("\n"));
+    script.deleteCharAt(script.length() - 1);
+    lines.close();
+
+    return script.toString();
+  }
+
+
+  public void run() {
 
     try {
+      Process process = new ProcessBuilder(bashEnvironment, "-c", readScript())
+          .redirectErrorStream(true)
+          .redirectOutput(Redirect.INHERIT)
+          .start();
 
-      ProcessBuilder builder = new ProcessBuilder("/usr/local/bin/bash", "-c", script);
-
-      builder.redirectErrorStream(true);
-
-      Process process = builder.start();
-      Scanner scan = new Scanner(System.in);
-      String line;
-
-      BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
       BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 
-      while (true) {
-        line = reader.readLine();
-        if (line != null) {
-          System.out.println(line);
-        } else {
-          break;
-        }
-
-        String input = scan.nextLine();
-        writer.write(input.trim() + "\n");
+      while (process.isAlive()) {
+        writer.write(new Scanner(System.in).next() + "\n");
         writer.flush();
       }
 
     } catch (Exception e) {
-      logger.error("failed execute " + script + " ", e);
+      logger.error("failed execute " + scriptPath + " ", e);
 
     }
 
