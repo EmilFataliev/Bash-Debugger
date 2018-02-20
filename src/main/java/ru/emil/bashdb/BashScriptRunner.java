@@ -36,24 +36,24 @@ class BashScriptRunner {
   }
 
 
-  public void run() {
+  public void run() throws IOException {
+
+    Process process = new ProcessBuilder(bashEnvironment, "-c", readScript())
+        .redirectErrorStream(true)
+        .redirectOutput(Redirect.INHERIT)
+        .start();
+
+    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 
     try {
-      Process process = new ProcessBuilder(bashEnvironment, "-c", readScript())
-          .redirectErrorStream(true)
-          .redirectOutput(Redirect.INHERIT)
-          .start();
-
-      BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-
       while (process.isAlive()) {
         writer.write(new Scanner(System.in).next() + "\n");
         writer.flush();
       }
 
     } catch (Exception e) {
+      writer.close();
       logger.error("failed execute " + scriptPath + " ", e);
-
     }
 
   }
