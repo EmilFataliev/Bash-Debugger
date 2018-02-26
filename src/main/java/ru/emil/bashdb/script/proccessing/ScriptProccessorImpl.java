@@ -9,7 +9,7 @@ public final class ScriptProccessorImpl implements ScriptProcessor {
     for (int i = 0; i < scriptLinesSplitted.length; ++i) {
       if (!scriptLinesSplitted[i].startsWith("#")) {
         scriptLinesSplitted[i] = String
-            .format("echo \"Line %s +%s: \" \n %s", i, scriptLinesSplitted[i], scriptLinesSplitted[i]);
+            .format("echo \"Line %s +%s: \" \n %s", i + 1, scriptLinesSplitted[i], scriptLinesSplitted[i]);
       }
     }
 
