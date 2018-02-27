@@ -1,4 +1,4 @@
-package ru.emil.bashdb.script.proccessing.entity;
+package ru.emil.bashdb.script.entity;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,7 +11,7 @@ public class Script {
   private final String content;
   private final String tracedContent;
 
-  public Script(final Path path, final String content, final String tracedContent) {
+  private Script(final Path path, final String content, final String tracedContent) {
     this.path = path;
     this.content = content;
     this.tracedContent = tracedContent;
