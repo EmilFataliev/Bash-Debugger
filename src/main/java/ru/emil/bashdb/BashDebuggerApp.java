@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.emil.bashdb.script.entity.Script;
 
-public class App {
+public class BashDebuggerApp {
 
   /**
    * Debug mode constants
@@ -34,7 +34,7 @@ public class App {
     }
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(App.class);
+  private static final Logger logger = LoggerFactory.getLogger(BashDebuggerApp.class);
 
   public static void main(String[] args) {
     String scriptPath;
@@ -45,9 +45,10 @@ public class App {
       if (DEBUG_MODE) {
         scriptPath = Objects
             .requireNonNull(
-                ClassLoader.getSystemClassLoader()
-                    .getResource(DebugScripts.SCRIPT_WITH_READING.getScriptFullName()))
-            .getPath();
+                ClassLoader
+                    .getSystemClassLoader()
+                    .getResource(DebugScripts.SCRIPT_WITH_READING.getScriptFullName())
+            ).getPath();
       } else {
         if (args.length > 0) {
           scriptPath = args[0];
@@ -57,10 +58,14 @@ public class App {
       }
 
       final Script script = Script.of(
-          Paths
-              .get(scriptPath));
-      final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(BASH_ENVIRONMENT,
-          script);
+          Paths.get(scriptPath)
+      );
+
+      final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(
+          BASH_ENVIRONMENT,
+          script
+      );
+
       bashScriptExecutor.debug();
     } catch (IOException e) {
       logger.error("Error during script executing: ", e);

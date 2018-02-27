@@ -22,8 +22,13 @@ class BashScriptExecutor {
   }
 
   public void debug() throws IOException {
-    System.out.println(String.format("Executing script %s in path %s:", script.getPath().toFile().getName(),
-        script.getPath().toFile().getParent()));
+    System.out.println(
+        String.format(
+            "Executing script %s in path %s:",
+            script.getPath().toFile().getName(),
+            script.getPath().toFile().getParent()
+        )
+    );
 
     final Process process = new ProcessBuilder(bashEnvironment, "-c", script.getTracedContent())
         .redirectErrorStream(true)
