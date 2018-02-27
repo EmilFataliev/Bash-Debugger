@@ -16,8 +16,8 @@ class BashScriptExecutor {
   private final String bashEnvironment;
   private final Script script;
 
-  /* package private */ BashScriptExecutor(String bashEnviroment, Script script) {
-    this.bashEnvironment = bashEnviroment;
+  /* package private */ BashScriptExecutor(final String bashEnvironment, final Script script) {
+    this.bashEnvironment = bashEnvironment;
     this.script = script;
   }
 

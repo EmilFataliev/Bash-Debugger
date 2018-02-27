@@ -13,7 +13,7 @@ public class BashDebuggerApp {
    * Debug mode constants
    **/
   private static final boolean DEBUG_MODE = true;
-  // Scripts prepared for debug mode
+  // Folder of scripts prepared for debug mode
   private static final String SCRIPTS_PATH = "debug/scripts/";
   // TODO: Should be determined in runtime
   private static final String BASH_ENVIRONMENT = "/usr/local/bin/bash";
@@ -25,7 +25,7 @@ public class BashDebuggerApp {
 
     private final String scriptName;
 
-    DebugScripts(String scriptName) {
+    DebugScripts(final String scriptName) {
       this.scriptName = scriptName;
     }
 
