@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+(set -o posix; set)
 export NICE_VAR=10
 export ANOTHER_VAR=20
 for i in {0..25..5}
@@ -17,3 +18,4 @@ then
 else
   echo "Nice is bigger or equal"
 fi
+(set -o posix; set)
