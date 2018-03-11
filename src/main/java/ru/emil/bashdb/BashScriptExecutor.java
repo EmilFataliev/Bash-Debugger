@@ -83,10 +83,9 @@ public class BashScriptExecutor {
               Files.lines(Paths.get(BashConstants.RUNTIME_ENV_STATE_FILE_NAME))
                   .collect(Collectors.toSet());
 
-          // TODO
-          runtime.add(REPLY);
-
           runtime.removeAll(initial);
+          runtime.removeIf(var -> var.startsWith(REPLY));
+
           runtime.forEach(System.out::println);
         } else if (userCommand.equals(UserInterfaceCommand.RUN.getCommand())) {
           writer.write(System.lineSeparator());
