@@ -13,12 +13,14 @@ public class Script {
 
   private final Path path;
   private final String content;
+  private final String normalisedContent;
   private final String tracedContent;
   private final String bashEnvironment;
 
   private Script(final ScriptBuilder scriptBuilder) {
     this.path = scriptBuilder.path;
     this.content = scriptBuilder.content;
+    this.normalisedContent = scriptBuilder.normalisedContent;
     this.tracedContent = scriptBuilder.tracedContent;
     this.bashEnvironment = scriptBuilder.bashEnvironment;
   }
@@ -26,11 +28,16 @@ public class Script {
   public static class ScriptBuilder {
 
     private Path path;
+
     private String content;
+    private String normalisedContent;
     private String tracedContent;
     private String bashEnvironment;
+    private ScriptProcessor scriptProcessor;
 
-    public ScriptBuilder() {}
+    public ScriptBuilder() {
+      scriptProcessor = new ScriptProcessorImpl();
+    }
 
     public ScriptBuilder withPath(final Path path) {
       this.path = path;
@@ -55,17 +62,23 @@ public class Script {
       Preconditions.checkNotNull(path);
       Preconditions.checkArgument(Files.exists(path));
 
-      final ScriptProcessor scriptProcessor = new ScriptProcessorImpl();
       this.content = scriptProcessor.readScript(path);
 
       return this;
     }
 
-    public ScriptBuilder traceContent() {
+    public ScriptBuilder normaliseContent() {
       Preconditions.checkNotNull(content);
 
-      final ScriptProcessor scriptProcessor = new ScriptProcessorImpl();
-      this.tracedContent = scriptProcessor.addTracing(content);
+      this.normalisedContent = scriptProcessor.normalise(content);
+
+      return this;
+    }
+
+    public ScriptBuilder traceContent() {
+      Preconditions.checkNotNull(normalisedContent);
+
+      this.tracedContent = scriptProcessor.addTracing(normalisedContent);
 
       return this;
     }
@@ -80,6 +93,10 @@ public class Script {
       return new Script(this);
     }
 
+
+  }
+  public String getContent() {
+    return content;
   }
 
   public Path getPath() {
@@ -90,8 +107,8 @@ public class Script {
     return tracedContent;
   }
 
-  public String getContent() {
-    return content;
+  public String getNormalisedContent() {
+    return normalisedContent;
   }
 
   public String getBashEnvironment() {

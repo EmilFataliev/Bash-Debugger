@@ -39,6 +39,10 @@ public class BashDebuggerDebugPoint {
     try {
       final Script script = new Script.ScriptBuilder()
           .withPath(scriptPath)
+          .readContent()
+          .normaliseContent()
+          .traceContent()
+          .evaluateBashEnvironment()
           .build();
 
       final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(

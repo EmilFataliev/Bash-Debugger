@@ -25,6 +25,7 @@ public class BashDebuggerApp {
       final Script script = new Script.ScriptBuilder()
           .withPath(scriptPath)
           .readContent()
+          .normaliseContent()
           .traceContent()
           .evaluateBashEnvironment()
           .build();

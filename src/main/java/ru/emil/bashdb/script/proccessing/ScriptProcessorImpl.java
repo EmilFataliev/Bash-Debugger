@@ -5,6 +5,31 @@ import ru.emil.bashdb.BashConstants;
 public final class ScriptProcessorImpl implements ScriptProcessor {
 
   @Override
+  public String normalise(String scriptContent) {
+    if (!scriptContent.startsWith(BashConstants.HEADER)) {
+      scriptContent =
+          BashConstants.HEADER
+              + System.lineSeparator()
+              + BashConstants.ENV
+              + BashConstants.OVER_WRITE_FILE
+              + BashConstants.INITIAL_ENV_STATE_FILE_NAME
+              + System.lineSeparator()
+              + scriptContent;
+    } else {
+      int indexAfterHeader = scriptContent.indexOf(System.lineSeparator());
+      scriptContent =
+          scriptContent.substring(0, indexAfterHeader + 1)
+              + BashConstants.ENV
+              + BashConstants.OVER_WRITE_FILE
+              + BashConstants.INITIAL_ENV_STATE_FILE_NAME
+              + System.lineSeparator()
+              + scriptContent.substring(indexAfterHeader, scriptContent.length() - 1);
+    }
+
+    return scriptContent.substring(0, scriptContent.length() - 1);
+  }
+
+  @Override
   public String addTracing(final String scriptLines) {
 
     final String[] scriptLinesSplited = scriptLines.split("\n");
