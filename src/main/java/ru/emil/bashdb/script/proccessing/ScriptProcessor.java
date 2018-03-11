@@ -7,6 +7,7 @@ import ru.emil.bashdb.BashConstants;
 
 public interface ScriptProcessor {
 
+  // TODO: нарушение абстракции, это чтение с измененением скрипта (разбить на два иил переименовать)
   default String readScript(final Path scriptPath) throws IOException {
     return Files.lines(scriptPath)
         .reduce((acc, line) -> acc + line + System.lineSeparator())

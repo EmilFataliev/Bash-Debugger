@@ -1,7 +1,6 @@
 package ru.emil.bashdb;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.emil.bashdb.commands.ConsoleInterfaceCommands;
@@ -23,9 +22,12 @@ public class BashDebuggerApp {
         throw new IllegalArgumentException();
       }
 
-      final Script script = Script.of(
-          Paths.get(scriptPath)
-      );
+      final Script script = new Script.ScriptBuilder()
+          .withPath(scriptPath)
+          .readContent()
+          .traceContent()
+          .evaluateBashEnvironment()
+          .build();
 
       final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(
           script

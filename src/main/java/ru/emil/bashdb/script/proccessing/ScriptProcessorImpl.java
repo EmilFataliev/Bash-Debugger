@@ -2,7 +2,7 @@ package ru.emil.bashdb.script.proccessing;
 
 import ru.emil.bashdb.BashConstants;
 
-public final class ScriptProccessorImpl implements ScriptProcessor {
+public final class ScriptProcessorImpl implements ScriptProcessor {
 
   @Override
   public String addTracing(final String scriptLines) {

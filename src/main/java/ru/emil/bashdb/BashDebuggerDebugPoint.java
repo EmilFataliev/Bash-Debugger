@@ -1,7 +1,6 @@
 package ru.emil.bashdb;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Objects;
 import ru.emil.bashdb.script.entity.Script;
 
@@ -38,8 +37,10 @@ public class BashDebuggerDebugPoint {
     ).getPath();
 
     try {
-      final Script script;
-      script = Script.of(Paths.get(scriptPath));
+      final Script script = new Script.ScriptBuilder()
+          .withPath(scriptPath)
+          .build();
+
       final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(
           script
       );
