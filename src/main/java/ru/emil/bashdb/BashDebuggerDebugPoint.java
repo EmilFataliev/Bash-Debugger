@@ -42,7 +42,6 @@ public class BashDebuggerDebugPoint {
           .readContent()
           .normaliseContent()
           .traceContent()
-          .evaluateBashEnvironment()
           .build();
 
       final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(

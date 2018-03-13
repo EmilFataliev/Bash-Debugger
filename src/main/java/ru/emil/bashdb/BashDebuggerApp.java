@@ -14,6 +14,8 @@ public class BashDebuggerApp {
     String scriptPath;
     String commandOption;
 
+    System.getProperties().list(System.out);
+
     try {
       if (args.length > 1) {
         commandOption = args[0];
@@ -27,7 +29,6 @@ public class BashDebuggerApp {
           .readContent()
           .normaliseContent()
           .traceContent()
-          .evaluateBashEnvironment()
           .build();
 
       final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(

@@ -14,8 +14,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.emil.bashdb.commands.UserInterfaceCommand;
+import ru.emil.bashdb.env.BashUserSystemInfo;
 import ru.emil.bashdb.script.entity.Script;
 
+// TODO: full refactoring
 public class BashScriptExecutor {
 
   // Exclude from vars set
@@ -24,14 +26,15 @@ public class BashScriptExecutor {
   private static final Logger logger = LoggerFactory.getLogger(BashScriptExecutor.class);
   private final Script script;
 
-  /* package private */
-  public BashScriptExecutor(final Script script) {
+  /* package private */ BashScriptExecutor(final Script script) {
     this.script = script;
   }
 
   public String run(boolean redirectToConsole) throws IOException {
     final StringBuilder scriptOutput = new StringBuilder();
-    final ProcessBuilder processBuilder = new ProcessBuilder(script.getBashEnvironment(), "-c",
+    final BashUserSystemInfo bashUserSystemInfo = BashUserSystemInfo.INSTANCE.getInstance();
+    final ProcessBuilder processBuilder = new ProcessBuilder(
+        bashUserSystemInfo.getBashEnvLocation(), "-c",
         script.getTracedContent());
 
     if (redirectToConsole) {
@@ -59,18 +62,18 @@ public class BashScriptExecutor {
         )
     );
 
-    final Process process = new ProcessBuilder(script.getBashEnvironment(), "-c",
+    final BashUserSystemInfo bashUserSystemInfo = BashUserSystemInfo.INSTANCE.getInstance();
+
+    final Process process = new ProcessBuilder(bashUserSystemInfo.getBashEnvLocation(), "-c",
         script.getTracedContent())
         .redirectErrorStream(true)
         .redirectOutput(Redirect.INHERIT)
         .start();
 
-    final BufferedWriter writer = new BufferedWriter(
-        new OutputStreamWriter(process.getOutputStream()));
-
     final Scanner scanner = new Scanner(System.in);
 
-    try {
+    try (BufferedWriter writer = new BufferedWriter(
+        new OutputStreamWriter(process.getOutputStream()))) {
       while (process.isAlive()) {
         final String userCommand = scanner.next();
 
@@ -100,12 +103,12 @@ public class BashScriptExecutor {
           writer.write(userCommand + System.lineSeparator());
           writer.flush();
         }
-
       }
 
     } catch (Exception e) {
-      writer.close();
       logger.error("failed execute " + script.getPath() + " ", e);
+    } finally {
+      process.destroy();
     }
 
 

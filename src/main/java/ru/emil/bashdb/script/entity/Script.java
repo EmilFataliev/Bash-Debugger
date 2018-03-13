@@ -5,24 +5,33 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import ru.emil.bashdb.env.BashEnv;
-import ru.emil.bashdb.script.proccessing.ScriptProcessor;
-import ru.emil.bashdb.script.proccessing.ScriptProcessorImpl;
+import java.util.Objects;
+import ru.emil.bashdb.script.handling.api.ScriptHandler;
+import ru.emil.bashdb.script.handling.impl.ScriptHandlerImpl;
 
+
+/**
+ * The entity for storing the script
+ */
 public class Script {
 
+  /* Absolute path to script */
   private final Path path;
+
+  /* Original content of script */
   private final String content;
+
+  /* Normalised content of script @see ScriptHandler#normalise */
   private final String normalisedContent;
+
+  /* Traced content of script @see ScriptHandler#addTracing */
   private final String tracedContent;
-  private final String bashEnvironment;
 
   private Script(final ScriptBuilder scriptBuilder) {
     this.path = scriptBuilder.path;
     this.content = scriptBuilder.content;
     this.normalisedContent = scriptBuilder.normalisedContent;
     this.tracedContent = scriptBuilder.tracedContent;
-    this.bashEnvironment = scriptBuilder.bashEnvironment;
   }
 
   public static class ScriptBuilder {
@@ -32,11 +41,10 @@ public class Script {
     private String content;
     private String normalisedContent;
     private String tracedContent;
-    private String bashEnvironment;
-    private ScriptProcessor scriptProcessor;
+    private ScriptHandler scriptHandler;
 
     public ScriptBuilder() {
-      scriptProcessor = new ScriptProcessorImpl();
+      scriptHandler = new ScriptHandlerImpl();
     }
 
     public ScriptBuilder withPath(final Path path) {
@@ -59,33 +67,24 @@ public class Script {
 
 
     public ScriptBuilder readContent() throws IOException {
-      Preconditions.checkNotNull(path);
-      Preconditions.checkArgument(Files.exists(path));
+      Preconditions.checkState(Objects.nonNull(path));
+      Preconditions.checkState(Files.exists(path));
 
-      this.content = scriptProcessor.readScript(path);
-
+      this.content = scriptHandler.readScript(path);
       return this;
     }
 
     public ScriptBuilder normaliseContent() {
-      Preconditions.checkNotNull(content);
+      Preconditions.checkState(Objects.nonNull(content));
 
-      this.normalisedContent = scriptProcessor.normalise(content);
-
+      this.normalisedContent = scriptHandler.normalise(content);
       return this;
     }
 
     public ScriptBuilder traceContent() {
-      Preconditions.checkNotNull(normalisedContent);
+      Preconditions.checkState(Objects.nonNull(normalisedContent));
 
-      this.tracedContent = scriptProcessor.addTracing(normalisedContent);
-
-      return this;
-    }
-
-    public ScriptBuilder evaluateBashEnvironment() throws IOException {
-      this.bashEnvironment = BashEnv.getBashEnvironmentRuntime();
-
+      this.tracedContent = scriptHandler.addTracing(normalisedContent);
       return this;
     }
 
@@ -93,8 +92,8 @@ public class Script {
       return new Script(this);
     }
 
-
   }
+
   public String getContent() {
     return content;
   }
@@ -111,7 +110,4 @@ public class Script {
     return normalisedContent;
   }
 
-  public String getBashEnvironment() {
-    return bashEnvironment;
-  }
 }

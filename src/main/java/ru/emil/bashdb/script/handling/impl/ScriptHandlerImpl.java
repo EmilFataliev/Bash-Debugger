@@ -1,13 +1,16 @@
-package ru.emil.bashdb.script.proccessing;
+package ru.emil.bashdb.script.handling.impl;
 
 import ru.emil.bashdb.BashConstants;
+import ru.emil.bashdb.script.handling.api.ScriptHandler;
 
-public final class ScriptProcessorImpl implements ScriptProcessor {
+public final class ScriptHandlerImpl implements ScriptHandler {
 
   @Override
-  public String normalise(String scriptContent) {
+  public String normalise(final String scriptContent) {
+    final String normalisedScriptContent;
+
     if (!scriptContent.startsWith(BashConstants.HEADER)) {
-      scriptContent =
+      normalisedScriptContent =
           BashConstants.HEADER
               + System.lineSeparator()
               + BashConstants.ENV
@@ -17,7 +20,7 @@ public final class ScriptProcessorImpl implements ScriptProcessor {
               + scriptContent;
     } else {
       int indexAfterHeader = scriptContent.indexOf(System.lineSeparator());
-      scriptContent =
+      normalisedScriptContent =
           scriptContent.substring(0, indexAfterHeader + 1)
               + BashConstants.ENV
               + BashConstants.OVER_WRITE_FILE
@@ -26,7 +29,7 @@ public final class ScriptProcessorImpl implements ScriptProcessor {
               + scriptContent.substring(indexAfterHeader, scriptContent.length() - 1);
     }
 
-    return scriptContent.substring(0, scriptContent.length() - 1);
+    return normalisedScriptContent.substring(0, normalisedScriptContent.length() - 1);
   }
 
   @Override

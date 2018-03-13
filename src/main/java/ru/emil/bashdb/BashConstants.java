@@ -1,10 +1,8 @@
 package ru.emil.bashdb;
 
 
-// TODO: пока пусть будет так
+// TODO: распил
 public final class BashConstants {
-  public static final String HOME = System.getProperty("user.home");
-
   public static final String INITIAL_ENV_STATE_FILE_NAME = "init_env_state";
   public static final String RUNTIME_ENV_STATE_FILE_NAME = "run_env_state";
 
