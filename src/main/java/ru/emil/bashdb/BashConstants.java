@@ -1,7 +1,7 @@
 package ru.emil.bashdb;
 
 
-// TODO: распил
+// TODO: sawn this
 public final class BashConstants {
   public static final String INITIAL_ENV_STATE_FILE_NAME = "init_env_state";
   public static final String RUNTIME_ENV_STATE_FILE_NAME = "run_env_state";

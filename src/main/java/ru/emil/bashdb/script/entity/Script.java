@@ -70,7 +70,7 @@ public class Script {
       Preconditions.checkState(Objects.nonNull(path));
       Preconditions.checkState(Files.exists(path));
 
-      this.content = scriptHandler.readScript(path);
+      this.content = scriptHandler.read(path);
       return this;
     }
 

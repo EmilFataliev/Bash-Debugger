@@ -12,7 +12,7 @@ public interface ScriptHandler {
    * @return content of script file
    * @throws IOException if scriptPath not found
    */
-  default String readScript(final Path scriptPath) throws IOException {
+  default String read(final Path scriptPath) throws IOException {
     return Files.lines(scriptPath)
         .reduce((acc, line) -> acc + line + System.lineSeparator())
         .orElseThrow(IllegalArgumentException::new);
