@@ -14,9 +14,7 @@ import ru.emil.bashdb.env.BashEnvLocationDetection;
  */
 public enum OSInfo {
   WINDOWS,
-  UNIX,
-  MAC,
-  OTHER;
+  UNIX;
 
   private String OSVersion;
   private static final OSInfo osInfo = detectOS();
@@ -30,7 +28,7 @@ public enum OSInfo {
     final String osName = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
     final String osVersion = System.getProperty("os.version");
 
-    OSInfo tempOsInfo = OTHER;
+    OSInfo tempOsInfo = UNIX;
     tempOsInfo.setOSVersion(osVersion);
 
     if (Strings.isNullOrEmpty(osName)) {
@@ -48,12 +46,9 @@ public enum OSInfo {
     if (osName.contains("nux")
         || osName.contains("nix")
         || osName.contains("aix")
-        || osName.contains("freebsd")) {
+        || osName.contains("freebsd")
+        || osName.contains("mac")) {
       tempOsInfo = UNIX;
-    }
-
-    if (osName.contains("mac")) {
-      tempOsInfo = MAC;
     }
 
     return tempOsInfo;
@@ -65,10 +60,6 @@ public enum OSInfo {
 
   public boolean isUnix() {
     return osInfo.name().equals(UNIX.name());
-  }
-
-  public boolean isMac() {
-    return osInfo.name().equals(MAC.name());
   }
 
   public String getOSVersion() {
