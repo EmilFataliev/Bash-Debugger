@@ -12,6 +12,7 @@ The Bash Debugger Project is a source-code debugger for bash that allows:
 ### Building
 
 Execute the script to collect the .jar file
+
  ``` mvn clean install```
  
 ### Examples
@@ -21,4 +22,4 @@ Execute the script to collect the .jar file
 
 ## License
 
-The contents of this repository are covered under the [GNU General Public License v3.0](LICENSE).
+The contents of this repository are covered under the [GNU General Public License v3.0](LICENSE)
