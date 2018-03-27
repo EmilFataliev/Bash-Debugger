@@ -10,7 +10,9 @@ public enum BashUserSystemInfo {
 
   private BashUserSystemInfo() {
     this.osInfo = OSInfo.getOsInfo();
-    this.bashEnvLocation = BashEnvLocationDetection.detectBashLocation();
+    this.bashEnvLocation = BashEnvLocationDetection
+        .detectBashLocation()
+        .orElseThrow(() -> new IllegalStateException("Could not determine bash location"));
   }
 
   public OSInfo getOsInfo() {
