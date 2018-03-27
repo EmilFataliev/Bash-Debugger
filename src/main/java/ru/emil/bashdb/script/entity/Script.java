@@ -49,7 +49,6 @@ public class Script {
 
     public ScriptBuilder withPath(final Path path) {
       this.path = path;
-
       return this;
     }
 

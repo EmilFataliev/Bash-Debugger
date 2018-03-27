@@ -5,6 +5,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import ru.emil.bashdb.env.os.OSInfo;
 
 public final class BashEnvLocationDetection {
@@ -30,12 +31,14 @@ public final class BashEnvLocationDetection {
       .unmodifiableList(
           Lists.newArrayList(
               "c:\\cygwin\\bin\\bash.exe",
-              "d:\\cygwin\\bin\\bash.exe"
+              "d:\\cygwin\\bin\\bash.exe",
+              "c:\\Program Files\\Git\\usr\\bin\\bash.exe",
+              "c:\\Program Files (x86)\\Git\\usr\\bin\\bash.exe"
           ));
 
   private BashEnvLocationDetection() {}
 
-  public static String detectBashLocation() {
+  public static Optional<String> detectBashLocation() {
     final OSInfo osInfo = OSInfo.getOsInfo();
 
     final Collection<String> locations = osInfo.isWindows()
@@ -44,20 +47,20 @@ public final class BashEnvLocationDetection {
 
     for (final String prospectiveLocation : locations) {
       if (isSuitable(Paths.get(prospectiveLocation).toFile())) {
-        return prospectiveLocation;
+        return Optional.of(prospectiveLocation);
       }
     }
 
     // if OS windows and location not find
     if (osInfo.isWindows()) {
       for (final String prospectiveLocation : POSSIBLE_LOCATIONS) {
-        if (isSuitable(Paths.get(prospectiveLocation).toFile())) {
-          return prospectiveLocation;
+        if (isSuitable(Paths.get(prospectiveLocation + ".exe").toFile())) {
+          return Optional.of(prospectiveLocation);
         }
       }
     }
 
-    return null;
+    return Optional.empty();
   }
 
   private static boolean isSuitable(final File prospectiveLocation) {

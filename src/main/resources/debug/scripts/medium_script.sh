@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-(set -o posix; set)
+trap 'read' DEBUG
+set -o verbose -o xtrace -o monitor -o tracefunc
 export NICE_VAR=10
 export ANOTHER_VAR=20
 for i in {0..25..5}
@@ -18,4 +19,11 @@ then
 else
   echo "Nice is bigger or equal"
 fi
-(set -o posix; set)
+
+# Задачи
+# trap 'read' DEBUG
+# set -o verbose -o xtrace -o monitor -o tracefunc
+# bash -i
+# prompt_command
+
+# google - shell trap debug
