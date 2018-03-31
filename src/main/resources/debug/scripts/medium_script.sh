@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-trap 'read' DEBUG
-set -o verbose -o xtrace -o monitor -o tracefunc
+__trace_ON__
 export NICE_VAR=10
 export ANOTHER_VAR=20
 for i in {0..25..5}
