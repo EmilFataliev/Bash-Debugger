@@ -8,6 +8,7 @@ public interface ScriptHandler {
 
   /**
    * Simple function for reading script content
+   *
    * @param scriptPath path to script
    * @return content of script file
    * @throws IOException if scriptPath not found
@@ -15,22 +16,15 @@ public interface ScriptHandler {
   default String read(final Path scriptPath) throws IOException {
     return Files.lines(scriptPath)
         .reduce((acc, line) -> acc + line + System.lineSeparator())
-        .orElseThrow(IllegalArgumentException::new);
+        .orElseThrow(() -> new IllegalArgumentException(
+            "Can't find script file: " + scriptPath.toAbsolutePath().toString()));
   }
 
   /**
-   * Function for adding header and (set -o posix; set) to the beginning of script (for getting
-   * initial environment, p.s. for debugging)
-   * @param scriptContent content of script
-   * @return normalised content of script
+   * Function for handling script content
+   * @param content input content of script @link ScriptHandler#read
+   * @return handled content of script
    */
-  String normalise(final String scriptContent);
-
-  /**
-   * Function for adding to script tracing of execution
-   * @param scriptLines normalised script
-   * @return traced and normalised content of script
-   */
-  String addTracing(final String scriptLines);
+  String handleScript(final String content);
 
 }

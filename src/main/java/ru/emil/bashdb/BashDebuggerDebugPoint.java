@@ -1,7 +1,8 @@
 package ru.emil.bashdb;
 
-import java.io.IOException;
 import java.util.Objects;
+import ru.emil.bashdb.executor.api.ScriptExecutor;
+import ru.emil.bashdb.executor.impl.ScriptExecutorImpl;
 import ru.emil.bashdb.script.entity.Script;
 
 public class BashDebuggerDebugPoint {
@@ -36,22 +37,15 @@ public class BashDebuggerDebugPoint {
             .getResource(DebugScripts.SCRIPT_WITH_READING.getScriptFullName())
     ).getPath();
 
-    try {
-      final Script script = new Script.ScriptBuilder()
-          .withPath(scriptPath)
-          .readContent()
-          .normaliseContent()
-          .traceContent()
-          .build();
+    final Script script = new Script.ScriptBuilder()
+        .withPath(scriptPath)
+        .readContent()
+        .handleContent()
+        .build();
 
-      final BashScriptExecutor bashScriptExecutor = new BashScriptExecutor(
-          script
-      );
+    final ScriptExecutor bashScriptExecutor = new ScriptExecutorImpl();
 
-      bashScriptExecutor.debug();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    bashScriptExecutor.execute(script);
 
   }
 }

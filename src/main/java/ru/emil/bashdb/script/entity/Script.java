@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.emil.bashdb.script.handling.api.ScriptHandler;
 import ru.emil.bashdb.script.handling.impl.ScriptHandlerImpl;
 
@@ -18,29 +20,26 @@ public class Script {
   /* Absolute path to script */
   private final Path path;
 
-  /* Original content of script */
   private final String content;
 
-  /* Normalised content of script @see ScriptHandler#normalise */
-  private final String normalisedContent;
+  private final String handledContent;
 
-  /* Traced content of script @see ScriptHandler#addTracing */
-  private final String tracedContent;
+  private static final Logger logger = LoggerFactory.getLogger(Script.class);
 
   private Script(final ScriptBuilder scriptBuilder) {
     this.path = scriptBuilder.path;
     this.content = scriptBuilder.content;
-    this.normalisedContent = scriptBuilder.normalisedContent;
-    this.tracedContent = scriptBuilder.tracedContent;
+    this.handledContent = scriptBuilder.handledContent;
   }
 
   public static class ScriptBuilder {
 
+    /**
+     * Block of entity fields
+     **/
     private Path path;
-
     private String content;
-    private String normalisedContent;
-    private String tracedContent;
+    private String handledContent;
     private ScriptHandler scriptHandler;
 
     public ScriptBuilder() {
@@ -65,25 +64,22 @@ public class Script {
     }
 
 
-    public ScriptBuilder readContent() throws IOException {
+    public ScriptBuilder readContent() {
       Preconditions.checkState(Objects.nonNull(path));
       Preconditions.checkState(Files.exists(path));
 
-      this.content = scriptHandler.read(path);
+      try {
+        this.content = scriptHandler.read(path);
+      } catch (IOException e) {
+        logger.error("Can't read " + path.toAbsolutePath().toString());
+      }
       return this;
     }
 
-    public ScriptBuilder normaliseContent() {
+    public ScriptBuilder handleContent() {
       Preconditions.checkState(Objects.nonNull(content));
 
-      this.normalisedContent = scriptHandler.normalise(content);
-      return this;
-    }
-
-    public ScriptBuilder traceContent() {
-      Preconditions.checkState(Objects.nonNull(normalisedContent));
-
-      this.tracedContent = scriptHandler.addTracing(normalisedContent);
+      this.handledContent = scriptHandler.handleScript(content);
       return this;
     }
 
@@ -91,22 +87,19 @@ public class Script {
       return new Script(this);
     }
 
-  }
 
-  public String getContent() {
-    return content;
   }
 
   public Path getPath() {
     return path;
   }
 
-  public String getTracedContent() {
-    return tracedContent;
+  public String getContent() {
+    return content;
   }
 
-  public String getNormalisedContent() {
-    return normalisedContent;
+  public String getHandledContent() {
+    return handledContent;
   }
 
 }
