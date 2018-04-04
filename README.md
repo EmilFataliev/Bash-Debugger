@@ -13,7 +13,7 @@ The Bash Debugger Project is a source-code debugger for bash that allows:
 
 ### Building
 
-Execute the script to collect the .jar file
+Execute the script to build the .jar file
 
  ``` mvn clean install```
  
