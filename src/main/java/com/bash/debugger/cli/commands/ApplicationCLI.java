@@ -2,6 +2,7 @@ package com.bash.debugger.cli.commands;
 
 public enum ApplicationCLI {
   DEBUG("-d"),
+  BASH_PATH("--bash-path"),
   HELP("-h");
 
   private final String argument;
