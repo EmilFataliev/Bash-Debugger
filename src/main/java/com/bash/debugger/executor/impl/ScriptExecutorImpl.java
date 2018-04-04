@@ -1,5 +1,8 @@
-package ru.emil.bashdb.executor.impl;
+package com.bash.debugger.executor.impl;
 
+import com.bash.debugger.env.BashUserSystemInfo;
+import com.bash.debugger.executor.api.ScriptExecutor;
+import com.bash.debugger.script.entity.Script;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Path;
@@ -7,9 +10,6 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.emil.bashdb.env.BashUserSystemInfo;
-import ru.emil.bashdb.executor.api.ScriptExecutor;
-import ru.emil.bashdb.script.entity.Script;
 
 public class ScriptExecutorImpl implements ScriptExecutor {
 
@@ -18,7 +18,7 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
   @Override
   public void execute(final Script script) {
-    logger.info(
+    logger.debug(
         String.format(
             "Executing script %s in path %s:",
             script.getPath().toFile().getName(),

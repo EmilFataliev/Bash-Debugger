@@ -1,8 +1,8 @@
-package ru.emil.bashdb.env.os;
+package com.bash.debugger.env.os;
 
+import com.bash.debugger.env.BashEnvLocationDetection;
 import com.google.common.base.Strings;
 import java.util.Locale;
-import ru.emil.bashdb.env.BashEnvLocationDetection;
 
 /**
  * Enum, which used for detection operating system

@@ -1,6 +1,6 @@
-package ru.emil.bashdb.script.handling.impl;
+package com.bash.debugger.script.handling.impl;
 
-import ru.emil.bashdb.script.handling.api.ScriptHandler;
+import com.bash.debugger.script.handling.api.ScriptHandler;
 
 public final class ScriptHandlerImpl implements ScriptHandler {
 

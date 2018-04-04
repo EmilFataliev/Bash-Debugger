@@ -1,9 +1,9 @@
-package ru.emil.bashdb;
+package com.bash.debugger;
 
-import ru.emil.bashdb.commands.ConsoleInterfaceCommands;
-import ru.emil.bashdb.executor.api.ScriptExecutor;
-import ru.emil.bashdb.executor.impl.ScriptExecutorImpl;
-import ru.emil.bashdb.script.entity.Script;
+import com.bash.debugger.cli.commands.ApplicationCLI;
+import com.bash.debugger.executor.api.ScriptExecutor;
+import com.bash.debugger.executor.impl.ScriptExecutorImpl;
+import com.bash.debugger.script.entity.Script;
 
 public class BashDebuggerApp {
 
@@ -28,7 +28,7 @@ public class BashDebuggerApp {
 
     final ScriptExecutor bashScriptExecutor = new ScriptExecutorImpl();
 
-    if (commandOption.equals(ConsoleInterfaceCommands.DEBUG.getParam())) {
+    if (commandOption.equals(ApplicationCLI.DEBUG.getArgument())) {
       bashScriptExecutor.execute(script);
     }
 

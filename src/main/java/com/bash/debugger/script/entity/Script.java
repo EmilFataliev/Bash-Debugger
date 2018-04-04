@@ -1,5 +1,7 @@
-package ru.emil.bashdb.script.entity;
+package com.bash.debugger.script.entity;
 
+import com.bash.debugger.script.handling.api.ScriptHandler;
+import com.bash.debugger.script.handling.impl.ScriptHandlerImpl;
 import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,8 +10,6 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.emil.bashdb.script.handling.api.ScriptHandler;
-import ru.emil.bashdb.script.handling.impl.ScriptHandlerImpl;
 
 
 /**

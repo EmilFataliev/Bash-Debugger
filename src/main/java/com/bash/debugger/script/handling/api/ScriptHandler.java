@@ -1,4 +1,4 @@
-package ru.emil.bashdb.script.handling.api;
+package com.bash.debugger.script.handling.api;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,6 +1,6 @@
-package ru.emil.bashdb.env;
+package com.bash.debugger.env;
 
-import ru.emil.bashdb.env.os.OSInfo;
+import com.bash.debugger.env.os.OSInfo;
 
 public enum BashUserSystemInfo {
   INSTANCE;

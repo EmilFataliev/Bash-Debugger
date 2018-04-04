@@ -1,12 +1,12 @@
-package ru.emil.bashdb.env;
+package com.bash.debugger.env;
 
+import com.bash.debugger.env.os.OSInfo;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import ru.emil.bashdb.env.os.OSInfo;
 
 public final class BashEnvLocationDetection {
 
@@ -51,7 +51,7 @@ public final class BashEnvLocationDetection {
       }
     }
 
-    // if OS windows and location not find
+    // if OS windows and location not found
     if (osInfo.isWindows()) {
       for (final String prospectiveLocation : POSSIBLE_LOCATIONS) {
         if (isSuitable(Paths.get(prospectiveLocation + ".exe").toFile())) {

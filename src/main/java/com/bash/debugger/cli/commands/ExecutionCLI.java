@@ -1,6 +1,6 @@
-package ru.emil.bashdb.commands;
+package com.bash.debugger.cli.commands;
 
-public enum UserInterfaceCommand {
+public enum ExecutionCLI {
   RUN("run", "continue script execution"),
   STOP("stop", "stop script execution"),
   VARIABLES("vars", "get stack of variables"),
@@ -12,7 +12,7 @@ public enum UserInterfaceCommand {
   private static final String DELIMITER = " - ";
   private static final String TAB = "\t";
 
-  UserInterfaceCommand(final String command, final String description) {
+  ExecutionCLI(final String command, final String description) {
     this.command = command;
     this.description = description;
   }
@@ -28,7 +28,7 @@ public enum UserInterfaceCommand {
   public static String getHelp() {
     StringBuilder commandsWithDescription = new StringBuilder();
 
-    for (UserInterfaceCommand command : UserInterfaceCommand.values()) {
+    for (ExecutionCLI command : ExecutionCLI.values()) {
       commandsWithDescription
           .append(TAB)
           .append(command.command)

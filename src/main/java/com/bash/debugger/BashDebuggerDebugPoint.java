@@ -1,16 +1,15 @@
-package ru.emil.bashdb;
+package com.bash.debugger;
 
+import com.bash.debugger.executor.api.ScriptExecutor;
+import com.bash.debugger.executor.impl.ScriptExecutorImpl;
+import com.bash.debugger.script.entity.Script;
 import java.util.Objects;
-import ru.emil.bashdb.executor.api.ScriptExecutor;
-import ru.emil.bashdb.executor.impl.ScriptExecutorImpl;
-import ru.emil.bashdb.script.entity.Script;
 
+/**
+ * Class for debugging application
+ */
 public class BashDebuggerDebugPoint {
 
-  /**
-   * Debug mode constants
-   **/
-  private static final boolean DEBUG_MODE = true;
   // Folder of scripts prepared for debug mode
   private static final String SCRIPTS_PATH = "debug/scripts/";
 
