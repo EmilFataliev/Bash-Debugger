@@ -20,7 +20,9 @@ Execute the script to build the .jar file
 ### Examples
 
 #### Command Line
-```java -jar target/bashdb-v1.0-SNAPSHOT -d /Users/exampl/my_script.sh```
+Example of simple executing: 
+
+```java -jar target/bashdb-v1.0-SNAPSHOT -d [script path]```
 
 ## License
 
