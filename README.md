@@ -1,4 +1,4 @@
-# Bash debugger [![Build Status](https://travis-ci.org/emfataliev/Bash-Debugger.svg?branch=master)](https://travis-ci.org/emfataliev/Bash-Debugger)
+# Bash Debugger [![Build Status](https://travis-ci.org/emfataliev/Bash-Debugger.svg?branch=master)](https://travis-ci.org/emfataliev/Bash-Debugger)
 
 The Bash Debugger Project is a source-code debugger for bash that allows:
 * start your script, specifying something that might affect its behavior
