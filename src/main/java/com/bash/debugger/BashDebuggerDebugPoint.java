@@ -3,6 +3,7 @@ package com.bash.debugger;
 import com.bash.debugger.executor.api.ScriptExecutor;
 import com.bash.debugger.executor.impl.ScriptExecutorImpl;
 import com.bash.debugger.script.entity.Script;
+import java.io.File;
 import java.util.Objects;
 
 /**
@@ -30,14 +31,16 @@ public class BashDebuggerDebugPoint {
   }
 
   public static void main(String[] args) {
-    final String scriptPath = Objects.requireNonNull(
+    final File scriptFile = new File(Objects.requireNonNull(
         ClassLoader
             .getSystemClassLoader()
-            .getResource(DebugScripts.SCRIPT_WITH_READING.getScriptFullName())
-    ).getPath();
+            .getResource(DebugScripts.MEDIUM_SCRIPT.getScriptFullName())
+    ).getPath());
+
+    scriptFile.setExecutable(true);
 
     final Script script = new Script.ScriptBuilder()
-        .withPath(scriptPath)
+        .withPath(scriptFile.getPath())
         .readContent()
         .handleContent()
         .build();
