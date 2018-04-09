@@ -3,11 +3,15 @@ package com.bash.debugger.executor.impl;
 import com.bash.debugger.env.BashUserSystemInfo;
 import com.bash.debugger.executor.api.ScriptExecutor;
 import com.bash.debugger.script.entity.Script;
-import com.google.common.base.Preconditions;
-import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,65 +40,81 @@ public class ScriptExecutorImpl implements ScriptExecutor {
                 .getResource(TRACING_SCRIPT_NAME)
         ).getPath());
 
-    Preconditions.checkState(traceScript.toFile().setExecutable(true));
-    Preconditions.checkState(script.getPath().toFile().canExecute());
+    List<String> commands = new ArrayList<>();
+    commands.add(bashUserSystemInfo.getBashEnvLocation());
 
-    // TODO kot 1: текущий вариант
-    final ProcessBuilder processBuilder = new ProcessBuilder(
-        bashUserSystemInfo.getBashEnvLocation(),
-        "-c",
-        "sh " +
-            traceScript.toAbsolutePath().toString() + " " +
-        script.getPath().toAbsolutePath().toString()
-    )
-        // пробовал играться с редиректами, что-то происходит но не понятно что
-        .redirectErrorStream(true)
-        .redirectInput(Redirect.INHERIT)
-        .redirectOutput(Redirect.INHERIT);
+    ShellThread shellThread = new ShellThread();
+    shellThread.start();
 
-    // по сути пробуем исполнять такую конструкцию
-    // /bin/bash -c "sh /Users/emilfataliev/Desktop/bashdb/target/classes/tracing/xtrace.sh /Users/emilfataliev/Desktop/bashdb/src/main/resources/debug/scripts/medium_script.sh"
+    doSleep(2000);
+
+    PrintWriter printWriter = new PrintWriter(shellThread.stdOutput);
+    printWriter.println(
+        traceScript.toFile().getAbsolutePath() + " " + script.getPath().toAbsolutePath()
+            .toString());
+    printWriter.flush();
+
+    InputStreamReader inputStream = new InputStreamReader(shellThread.inputStream);
+    InputStreamReader errorStream = new InputStreamReader(shellThread.errorStream);
+    InputStreamReader consoleStream = new InputStreamReader(System.in);
+
     try {
-      processBuilder.start();
-    } catch (IOException e) {
-      logger.error("Failed executing " + script.getPath() + " ", e);
+      while (shellThread.isAlive()) {
+        if (inputStream.ready()) {
+          BufferedReader bufferedReader = new BufferedReader(inputStream);
+          System.out.println(bufferedReader.readLine());
+        }
+
+        if (errorStream.ready()) {
+          BufferedReader bufferedReader = new BufferedReader(errorStream);
+          System.out.println(bufferedReader.readLine());
+        }
+        if (consoleStream.ready()) {
+          BufferedReader bufferedReader = new BufferedReader(consoleStream);
+          printWriter.println(bufferedReader.readLine());
+          printWriter.flush();
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    // TODO kot 2: вариант реализации с помощью Runtime executor'a
-    /**
-     Runtime.getRuntime().exec(new String[]{
-     bashUserSystemInfo.getBashEnvLocation() + " -c \"sh "
-     + traceScript.toAbsolutePath().toString()
-     + " " + script.getPath().toAbsolutePath().toString() + "\""
-     });
+  }
 
-     **/
+  private void doSleep(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+    }
+  }
 
-    // TODO kot 3: раньше было примерно так
-    /**
-     try {
-     final Process process = new ProcessBuilder(bashUserSystemInfo.getBashEnvLocation(), "-c",
-     script.getHandledContent())
-     .redirectErrorStream(true)
-     .redirectOutput(Redirect.INHERIT)
-     .start();
+  public class ShellThread extends Thread {
 
-     final BufferedWriter writer = new BufferedWriter(
-     new OutputStreamWriter(process.getOutputStream()));
+    InputStream inputStream;
+    InputStream errorStream;
+    OutputStream stdOutput;
 
-     final Scanner scanner = new Scanner(System.in);
+    public void run() {
+      try {
+        final BashUserSystemInfo bashUserSystemInfo = BashUserSystemInfo.INSTANCE.getInstance();
 
-     while (process.isAlive()) {
-     final String userCommand = scanner.next();
-     writer.write(userCommand + System.lineSeparator());
-     writer.flush();
-     }
-     } catch (IOException e) {
-     e.printStackTrace();
-     }
-     **/
-    // TODO kot 4: возможно стоит обратить внимание на <code>Redirect.PIPE</code>
-    // Цель запустить трасировку через java
+        List<String> commands = new ArrayList<>();
+        commands.add(bashUserSystemInfo.getBashEnvLocation());
 
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        Process process = pb.start();
+
+        stdOutput = process.getOutputStream();
+        inputStream = process.getInputStream();
+        errorStream = process.getErrorStream();
+
+        int exitValue = process.waitFor();
+      } catch (Throwable th) {
+        th.printStackTrace();
+      }
+    }
   }
 }
+
+
+
