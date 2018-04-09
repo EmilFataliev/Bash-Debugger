@@ -39,21 +39,6 @@ __trace_OFF__() {
 }
 
 
-__do_help__() {
-  printf $"Usage: xtrace [OPTION]... PROGRAM [PROGRAMOPTION]...\n"
-  printf $"Trace execution of program by printing currently executed function.
-     --data=FILE          Don't run the program, just print the data from FILE.
-   -?,--help              Print this help and exit
-      --usage             Give a short usage message
-   -V,--version           Print version information and exit
-Mandatory arguments to long options are also mandatory for any corresponding
-short options.
-"
-  echo $"For bug reporting instructions, please see:
-<http://www.gnu.org/software/libc/bugs.html>.
-"
-  exit 0
-}
 
 
 export -f __trace_ON__ __trace_OFF__ __trap_debug__
@@ -61,7 +46,7 @@ export -f __trace_ON__ __trace_OFF__ __trap_debug__
 
 #####  Prompt for xtrace
 
-export PS4='\[\e[0;32m\]${BASH_SOURCE} line \[\e[0;49;95m\]${LINENO}: \[\e[0;32m\]${FUNCNAME[0]:+${FUNCNAME[0]}(): }\[\e[0m\]'
+export PS4='\[\e[0;32m\]${BASH_SOURCE##*/} line \[\e[0;49;95m\]${LINENO}: \[\e[0;32m\]${FUNCNAME[0]:+${FUNCNAME[0]}(): }\[\e[0m\]'
 
 
 #####  Read from pipe and print xtrace
