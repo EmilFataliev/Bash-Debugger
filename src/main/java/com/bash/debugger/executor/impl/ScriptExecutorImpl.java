@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class ScriptExecutorImpl implements ScriptExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(ScriptExecutor.class);
-  private static final String TRACING_SCRIPT_NAME = "tracing/xtrace.sh";
+  private static final String TRACING_SCRIPT_NAME = "tracing/bash_db.sh";
 
   @Override
   public void execute(final Script script) {
@@ -62,17 +62,24 @@ public class ScriptExecutorImpl implements ScriptExecutor {
       while (shellThread.isAlive()) {
         if (inputStream.ready()) {
           BufferedReader bufferedReader = new BufferedReader(inputStream);
-          System.out.println(bufferedReader.readLine());
+          while (bufferedReader.ready()) {
+            System.out.println(bufferedReader.readLine());
+          }
         }
 
         if (errorStream.ready()) {
           BufferedReader bufferedReader = new BufferedReader(errorStream);
-          System.out.println(bufferedReader.readLine());
+          while (bufferedReader.ready()) {
+            System.out.println(bufferedReader.readLine());
+          }
         }
         if (consoleStream.ready()) {
           BufferedReader bufferedReader = new BufferedReader(consoleStream);
-          printWriter.println(bufferedReader.readLine());
-          printWriter.flush();
+
+          PrintWriter consolePrinter = new PrintWriter(shellThread.stdOutput);
+          consolePrinter.println(bufferedReader.readLine());
+          consolePrinter.flush();
+          shellThread.stdOutput.flush();
         }
       }
     } catch (Exception e) {

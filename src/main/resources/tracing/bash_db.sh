@@ -2,9 +2,11 @@
 
 trap 'exec 2> /dev/null
     rm -f $pipe
+    rm -f /tmp/init_env_state
     kill $print_pid
     kill -- -$target_pid'   EXIT
 
+#####  em: $$ is the process ID (PID) of the script itself.
 pipe=/tmp/pipe_$$
 mkfifo $pipe
 
@@ -17,19 +19,21 @@ if [ ${#@} -eq 0 ]; then
     exit 1
 else
     target_command=$1
+    ##### em: shift is a bash built-in which kind of removes arguments
     shift
 fi
-
 
 #####  Trace functions
 
 __trap_debug__() {
+    (set -o posix ; set) > /tmp/runtime_env_state
     set -o monitor
     suspend -f
     set +o monitor
 }
 
 __trace_ON__() {
+    (set -o posix ; set) > /tmp/init_env_state
     set -o xtrace -o functrace
     trap __trap_debug__ DEBUG
 }
@@ -76,9 +80,21 @@ target_pid=$!
 #####  Trace !
 
 while read line; do
-    if kill -0 $target_pid 2> /dev/null; then
-        fg %% > /dev/null
+    if [[ $line == *env* ]]
+    then
+        sed -i '' '/^BASH_LINENO/d' /tmp/runtime_env_state
+        sed -i '' '/^LINENO/d' /tmp/runtime_env_state
+        sed -i '' '/^PS4/d' /tmp/runtime_env_state
+        sed -i '' '/^SHELLOPTS/d' /tmp/runtime_env_state
+        sed -i '' '/^FUNCNAME/d' /tmp/runtime_env_state
+        printf "\n\033[0;34m========== ENVIRONMENT ==========\n"
+        grep -Fxvf /tmp/init_env_state /tmp/runtime_env_state
+        printf "=================================\033[0m\n"
     else
-        exit
+        if kill -0 $target_pid 2> /dev/null; then
+            fg %% > /dev/null
+        else
+            exit
+        fi
     fi
 done

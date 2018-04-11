@@ -18,11 +18,3 @@ then
 else
   echo "Nice is bigger or equal"
 fi
-
-# Задачи
-# trap 'read' DEBUG
-# set -o verbose -o xtrace -o monitor -o tracefunc
-# bash -i
-# prompt_command
-
-# google - shell trap debug
