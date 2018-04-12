@@ -1,0 +1,36 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+group = 'com.bash.debugger'
+version = '1.0-SNAPSHOT'
+mainClassName = 'com.bash.debugger.BashDebuggerApp'
+
+description = "The Bash Debugger Project is a source-code debugger for bash"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '24.0-jre'
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.5'
+    testCompile group: 'org.testng', name: 'testng', version: '6.14.2'
+}
+
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
+    }
+}

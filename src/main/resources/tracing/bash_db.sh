@@ -3,6 +3,7 @@
 trap 'exec 2> /dev/null
     rm -f $pipe
     rm -f /tmp/init_env_state
+    rm -f /tmp/runtime_env_state
     kill $print_pid
     kill -- -$target_pid'   EXIT
 

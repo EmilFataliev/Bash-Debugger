@@ -3,7 +3,11 @@ package com.bash.debugger.executor.impl;
 import com.bash.debugger.env.BashUserSystemInfo;
 import com.bash.debugger.executor.api.ScriptExecutor;
 import com.bash.debugger.script.entity.Script;
+import com.google.common.base.Preconditions;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -33,12 +37,35 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
     final BashUserSystemInfo bashUserSystemInfo = BashUserSystemInfo.INSTANCE.getInstance();
 
-    final Path traceScript = Paths.get(
-        Objects.requireNonNull(
-            getClass()
-                .getClassLoader()
-                .getResource(TRACING_SCRIPT_NAME)
-        ).getPath());
+    final InputStreamReader inputStreamReader = new InputStreamReader(ClassLoader
+        .getSystemClassLoader()
+        .getResourceAsStream(TRACING_SCRIPT_NAME));
+
+    File traceScript = null;
+    FileWriter writer = null;
+
+    try {
+      traceScript = File.createTempFile("bash_db", ".sh");
+      writer = new FileWriter(traceScript);
+    } catch (IOException e) {
+      logger.error(e.getMessage(), e);
+    }
+
+    Preconditions.checkState(Objects.requireNonNull(traceScript).setExecutable(true));
+
+    try (final BufferedReader bashDbScriptReader = new BufferedReader(inputStreamReader)) {
+      String lines = bashDbScriptReader
+          .lines()
+          .reduce((acc, line) -> acc + line + System.lineSeparator())
+          .orElseThrow(IllegalAccessError::new);
+
+      Objects.requireNonNull(writer).write(lines);
+      writer.flush();
+      writer.close();
+
+    } catch (IOException e) {
+      logger.error(e.getMessage(), e);
+    }
 
     List<String> commands = new ArrayList<>();
     commands.add(bashUserSystemInfo.getBashEnvLocation());
@@ -49,9 +76,8 @@ public class ScriptExecutorImpl implements ScriptExecutor {
     doSleep(2000);
 
     PrintWriter printWriter = new PrintWriter(shellThread.stdOutput);
-    printWriter.println(
-        traceScript.toFile().getAbsolutePath() + " " + script.getPath().toAbsolutePath()
-            .toString());
+    logger.info(traceScript.getPath() + " " + script.getPath());
+    printWriter.println(traceScript.getPath() + " " + script.getPath());
     printWriter.flush();
 
     InputStreamReader inputStream = new InputStreamReader(shellThread.inputStream);
