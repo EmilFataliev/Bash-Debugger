@@ -29,7 +29,7 @@ public class ScriptExecutorImpl implements ScriptExecutor {
         String.format(
             "Executing script %s in path %s:",
             script.getPath().toFile().getName(),
-            script.getPath().toFile().getParent()
+            script.getPath().toFile().getAbsolutePath()
         )
     );
 
@@ -50,6 +50,7 @@ public class ScriptExecutorImpl implements ScriptExecutor {
     }
 
     Preconditions.checkState(Objects.requireNonNull(traceScript).setExecutable(true));
+    Preconditions.checkState(Objects.requireNonNull(script.getPath().toFile()).setExecutable(true));
 
     try (final BufferedReader bashDbScriptReader = new BufferedReader(inputStreamReader)) {
       String lines = bashDbScriptReader
@@ -74,7 +75,9 @@ public class ScriptExecutorImpl implements ScriptExecutor {
     doSleep(2000);
 
     PrintWriter printWriter = new PrintWriter(shellThread.stdOutput);
-    logger.info(traceScript.getPath() + " " + script.getPath());
+
+    logger.debug(traceScript.getPath() + " " + script.getPath());
+
     printWriter.println(traceScript.getPath() + " " + script.getPath());
     printWriter.flush();
 

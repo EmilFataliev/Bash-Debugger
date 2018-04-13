@@ -33,7 +33,7 @@ __trap_debug__() {
     set +o monitor
 }
 
-__trace_ON__() {
+__debug_ON__() {
     (set -o posix ; set) > /tmp/init_env_state
     set -o xtrace -o functrace
     trap __trap_debug__ DEBUG
@@ -46,7 +46,7 @@ __trace_OFF__() {
 
 
 
-export -f __trace_ON__ __trace_OFF__ __trap_debug__
+export -f __debug_ON__ __trace_OFF__ __trap_debug__
 
 
 #####  Prompt for xtrace
@@ -102,6 +102,7 @@ while read line; do
     if [ "$line" == "env" ]
     then
         sed -i '' '/^BASH_LINENO/d' /tmp/runtime_env_state
+        sed -i '' '/^BASH_SOURCE/d' /tmp/runtime_env_state
         sed -i '' '/^LINENO/d' /tmp/runtime_env_state
         sed -i '' '/^PS4/d' /tmp/runtime_env_state
         sed -i '' '/^SHELLOPTS/d' /tmp/runtime_env_state
