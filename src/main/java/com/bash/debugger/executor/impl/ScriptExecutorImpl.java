@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class ScriptExecutorImpl implements ScriptExecutor {
 
   private static final Logger logger = LoggerFactory.getLogger(ScriptExecutor.class);
-  private static final String TRACING_SCRIPT_NAME = "tracing/bash_db.sh";
+  private static final String TRACING_SCRIPT_NAME = "main/bash_db.sh";
 
   @Override
   public void execute(final Script script) {

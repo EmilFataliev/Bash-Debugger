@@ -5,7 +5,7 @@ trap 'exec 2> /dev/null
     rm -f /tmp/init_env_state
     rm -f /tmp/runtime_env_state
     kill $print_pid
-    kill -- -$target_pid'   EXIT
+    kill -- -$target_pid' EXIT
 
 #####  em: $$ is the process ID (PID) of the script itself.
 pipe=/tmp/pipe_$$
@@ -51,7 +51,7 @@ export -f __trace_ON__ __trace_OFF__ __trap_debug__
 
 #####  Prompt for xtrace
 
-export PS4='\[\e[0;32m\]${BASH_SOURCE##*/} line \[\e[0;49;95m\]${LINENO}: \[\e[0;32m\]${FUNCNAME[0]:+${FUNCNAME[0]}(): }\[\e[0m\]'
+export PS4='\[\e[0;32m\]${BASH_SOURCE##*/} line \[\e[0;49;95m\]$((${LINENO}-1)): \[\e[0;32m\]${FUNCNAME[0]:+${FUNCNAME[0]}(): }\[\e[0m\]'
 
 
 #####  Read from pipe and print xtrace
@@ -72,7 +72,7 @@ print_pid=$!
 # disable suspend
 set -o monitor
 
-# enable tracing for shell functions
+# enable main for shell functions
 bash -c "$target_command"' "$0" "$@"' "$@" &> $pipe &
 
 target_pid=$!
@@ -81,21 +81,45 @@ target_pid=$!
 #####  Trace !
 
 while read line; do
-    if [[ $line == *env* ]]
+
+    if [ "$line" == "help" ]
+    then
+        printf "\n\033[0;32m======================================== SCRIPT ENVIRONMENT ========================================\033[0m\n"
+        cat /tmp/runtime_env_state
+        printf "\033[0;32m====================================================================================================\033[0m\n\n"
+        continue
+    fi
+
+
+    if [ "$line" == "env -f" ]
+    then
+        printf "\n\033[0;32m======================================== SCRIPT ENVIRONMENT ========================================\033[0m\n"
+        cat /tmp/runtime_env_state
+        printf "\033[0;32m====================================================================================================\033[0m\n\n"
+        continue
+    fi
+
+    if [ "$line" == "env" ]
     then
         sed -i '' '/^BASH_LINENO/d' /tmp/runtime_env_state
         sed -i '' '/^LINENO/d' /tmp/runtime_env_state
         sed -i '' '/^PS4/d' /tmp/runtime_env_state
         sed -i '' '/^SHELLOPTS/d' /tmp/runtime_env_state
         sed -i '' '/^FUNCNAME/d' /tmp/runtime_env_state
-        printf "\n\033[0;34m========== ENVIRONMENT ==========\n"
+        printf "\n\033[0;34m======================================== ENVIRONMENT ========================================\n"
         grep -Fxvf /tmp/init_env_state /tmp/runtime_env_state
-        printf "=================================\033[0m\n"
+        printf "=============================================================================================\033[0m\n"
+        continue
+    fi
+
+    if [ "$line" == "exit" ]
+    then
+        exit
+    fi
+
+    if kill -0 $target_pid 2> /dev/null; then
+        fg %% > /dev/null
     else
-        if kill -0 $target_pid 2> /dev/null; then
-            fg %% > /dev/null
-        else
-            exit
-        fi
+        exit
     fi
 done

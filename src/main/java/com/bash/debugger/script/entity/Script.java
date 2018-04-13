@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,69 +27,42 @@ public class Script {
 
   private static final Logger logger = LoggerFactory.getLogger(Script.class);
 
-  private Script(final ScriptBuilder scriptBuilder) {
-    this.path = scriptBuilder.path;
-    this.content = scriptBuilder.content;
-    this.handledContent = scriptBuilder.handledContent;
+  public static Script withPath(final String path) {
+    final Path scriptPath = Paths.get(path);
+    final ScriptHandler scriptHandler = new ScriptHandlerImpl();
+    String content = null;
+    final String handledContent;
+
+    Preconditions.checkState(Objects.nonNull(scriptPath));
+    Preconditions.checkState(Files.exists(scriptPath));
+
+    try {
+      content = scriptHandler.read(scriptPath);
+    } catch (IOException e) {
+      logger.error("Can't read " + scriptPath.toAbsolutePath().toString());
+    }
+
+    Preconditions.checkState(Objects.nonNull(content));
+    handledContent = scriptHandler.handleScript(content);
+    try {
+      Files.write(scriptPath, handledContent.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+    } catch (IOException e) {
+      logger.error(e.getMessage(), e);
+    }
+
+    return new Script(
+        scriptPath,
+        content,
+        handledContent
+    );
   }
 
-  public static class ScriptBuilder {
-
-    /**
-     * Block of entity fields
-     **/
-    private Path path;
-    private String content;
-    private String handledContent;
-    private ScriptHandler scriptHandler;
-
-    public ScriptBuilder() {
-      scriptHandler = new ScriptHandlerImpl();
-    }
-
-    public ScriptBuilder withPath(final Path path) {
-      this.path = path;
-      return this;
-    }
-
-    public ScriptBuilder withPath(final String path) {
-      this.path = Paths.get(path);
-
-      return this;
-    }
-
-    public ScriptBuilder withContent(final String content) {
-      this.content = content;
-
-      return this;
-    }
-
-
-    public ScriptBuilder readContent() {
-      Preconditions.checkState(Objects.nonNull(path));
-      Preconditions.checkState(Files.exists(path));
-
-      try {
-        this.content = scriptHandler.read(path);
-      } catch (IOException e) {
-        logger.error("Can't read " + path.toAbsolutePath().toString());
-      }
-      return this;
-    }
-
-    public ScriptBuilder handleContent() {
-      Preconditions.checkState(Objects.nonNull(content));
-
-      this.handledContent = scriptHandler.handleScript(content);
-      return this;
-    }
-
-    public Script build() {
-      return new Script(this);
-    }
-
-
+  private Script(final Path path, final String content, final String handledContent) {
+    this.path = path;
+    this.content = content;
+    this.handledContent = handledContent;
   }
+
 
   public Path getPath() {
     return path;

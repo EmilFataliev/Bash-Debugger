@@ -20,11 +20,7 @@ public class BashDebuggerApp {
       throw new IllegalArgumentException("Illegal arguments for script executing");
     }
 
-    final Script script = new Script.ScriptBuilder()
-        .withPath(scriptPath)
-        .readContent()
-        .handleContent()
-        .build();
+    final Script script = Script.withPath(scriptPath);
 
     final ScriptExecutor bashScriptExecutor = new ScriptExecutorImpl();
 

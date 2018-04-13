@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+__trace_ON__
 export a=10
 echo Hello, who am I talking to?
 echo second line

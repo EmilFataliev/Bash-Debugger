@@ -15,7 +15,7 @@ public interface ScriptHandler {
    */
   default String read(final Path scriptPath) throws IOException {
     return Files.lines(scriptPath)
-        .reduce((acc, line) -> acc + line + System.lineSeparator())
+        .reduce((acc, line) -> acc + System.lineSeparator() + line)
         .orElseThrow(() -> new IllegalArgumentException(
             "Can't find script file: " + scriptPath.toAbsolutePath().toString()));
   }

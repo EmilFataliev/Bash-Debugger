@@ -24,8 +24,16 @@ public final class ScriptHandlerImpl implements ScriptHandler {
   }
 
   private String addTracing(final String content) {
+
+    if (content.contains(TRACING_ON))
+      return content;
+
     return new StringBuilder(content)
-        .insert(SHEBANG_LINE.length() + 1, TRACING_ON + System.lineSeparator())
+        .insert(
+            SHEBANG_LINE.length() + 1,
+            TRACING_ON
+                + System.lineSeparator()
+        )
         .toString();
   }
 
