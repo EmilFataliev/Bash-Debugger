@@ -15,14 +15,14 @@ The Bash Debugger Project is a source-code debugger for bash that allows:
 
 Execute the script to build the .jar file
 
- ``` mvn clean install```
+ ```./gradlew clean build```
  
 ### Examples
 
 #### Command Line
 Example of simple executing: 
 
-```java -jar target/bashdb-v1.0-SNAPSHOT -d [script path]```
+```java -jar build/libs/bashdb-1.0-SNAPSHOT-all.jar -d [script path]```
 
 ## License
 
