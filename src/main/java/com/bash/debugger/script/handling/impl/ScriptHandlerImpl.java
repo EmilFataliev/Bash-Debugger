@@ -1,6 +1,8 @@
 package com.bash.debugger.script.handling.impl;
 
 import com.bash.debugger.script.handling.api.ScriptHandler;
+import com.google.common.base.Functions;
+import java.util.function.Function;
 
 public final class ScriptHandlerImpl implements ScriptHandler {
 
@@ -11,8 +13,9 @@ public final class ScriptHandlerImpl implements ScriptHandler {
 
   @Override
   public String handleScript(final String content) {
-    final String contentWithShebang = addShebangLine(content);
-    return addTracing(contentWithShebang);
+    Function<String, String> handler = Functions.compose(this::addTracing, this::addShebangLine);
+
+    return handler.apply(content);
   }
 
   private String addShebangLine(final String content) {
