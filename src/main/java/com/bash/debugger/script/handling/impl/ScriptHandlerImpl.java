@@ -13,9 +13,7 @@ public final class ScriptHandlerImpl implements ScriptHandler {
 
   @Override
   public String handleScript(final String content) {
-    Function<String, String> handler = Functions.compose(this::addTracing, this::addShebangLine);
-
-    return handler.apply(content);
+    return Functions.compose(this::addTracing, this::addShebangLine).apply(content);
   }
 
   private String addShebangLine(final String content) {
