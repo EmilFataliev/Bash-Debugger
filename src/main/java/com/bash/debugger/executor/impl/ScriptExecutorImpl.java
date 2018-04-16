@@ -23,6 +23,9 @@ public class ScriptExecutorImpl implements ScriptExecutor {
   private static final Logger logger = LoggerFactory.getLogger(ScriptExecutor.class);
   private static final String TRACING_SCRIPT_NAME = "main/bash_db.sh";
 
+  public static final String ANSI_RESET = "\u001B[0m";
+  public static final String ANSI_GREEN = "\u001B[32m";
+
   @Override
   public void execute(final Script script) {
     logger.debug(
@@ -72,15 +75,16 @@ public class ScriptExecutorImpl implements ScriptExecutor {
     ShellThread shellThread = new ShellThread();
     shellThread.start();
 
-    doSleep(2000);
+    doSleep(1000);
 
-    logger.info("Start debugging " + script.getPath().getFileName());
+    System.out
+        .println(ANSI_GREEN + "Start debugging " + script.getPath().getFileName() + ANSI_RESET);
 
     PrintWriter printWriter = new PrintWriter(shellThread.stdOutput);
 
-    logger.debug(traceScript.getPath() + " " + script.getPath());
+    logger.debug(traceScript.getAbsolutePath() + " " + script.getPath());
 
-    printWriter.println(traceScript.getPath() + " " + script.getPath());
+    printWriter.println(traceScript.getAbsolutePath() + " " + script.getPath());
     printWriter.flush();
 
     InputStreamReader inputStream = new InputStreamReader(shellThread.inputStream);

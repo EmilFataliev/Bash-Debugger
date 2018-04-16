@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+__debug_ON__
 
 fact ()
 {
