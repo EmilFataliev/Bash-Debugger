@@ -2,7 +2,6 @@ package com.bash.debugger.script.handling.impl;
 
 import com.bash.debugger.script.handling.api.ScriptHandler;
 import com.google.common.base.Functions;
-import java.util.function.Function;
 
 public final class ScriptHandlerImpl implements ScriptHandler {
 

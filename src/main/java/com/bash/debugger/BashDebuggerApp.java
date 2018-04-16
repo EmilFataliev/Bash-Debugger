@@ -11,8 +11,6 @@ public class BashDebuggerApp {
     String scriptPath;
     String commandOption;
 
-    System.getProperties().list(System.out);
-
     if (args.length > 1) {
       commandOption = args[0];
       scriptPath = args[1];

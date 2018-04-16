@@ -74,6 +74,8 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
     doSleep(2000);
 
+    logger.info("Start debugging " + script.getPath().getFileName());
+
     PrintWriter printWriter = new PrintWriter(shellThread.stdOutput);
 
     logger.debug(traceScript.getPath() + " " + script.getPath());
@@ -87,32 +89,43 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
     try {
       while (shellThread.isAlive()) {
-        if (inputStream.ready()) {
-          BufferedReader bufferedReader = new BufferedReader(inputStream);
-          while (bufferedReader.ready()) {
-            System.out.println(bufferedReader.readLine());
-          }
-        }
+        handleOut(shellThread, inputStream);
 
-        if (errorStream.ready()) {
-          BufferedReader bufferedReader = new BufferedReader(errorStream);
-          while (bufferedReader.ready()) {
-            System.out.println(bufferedReader.readLine());
-          }
-        }
+        handleOut(shellThread, errorStream);
         if (consoleStream.ready()) {
           BufferedReader bufferedReader = new BufferedReader(consoleStream);
+          final String cmd = bufferedReader.readLine();
 
-          PrintWriter consolePrinter = new PrintWriter(shellThread.stdOutput);
-          consolePrinter.println(bufferedReader.readLine());
-          consolePrinter.flush();
-          shellThread.stdOutput.flush();
+          if ("exit".equals(cmd)) {
+            shellThread.exit();
+          } else {
+            PrintWriter consolePrinter = new PrintWriter(shellThread.stdOutput);
+            consolePrinter.println(cmd);
+            consolePrinter.flush();
+            shellThread.stdOutput.flush();
+          }
         }
       }
     } catch (Exception e) {
       e.printStackTrace();
     }
 
+  }
+
+  private void handleOut(ShellThread shellThread, InputStreamReader inputStream)
+      throws IOException {
+    if (inputStream.ready()) {
+      BufferedReader bufferedReader = new BufferedReader(inputStream);
+      while (bufferedReader.ready()) {
+        String line = bufferedReader.readLine();
+        if ("debug_end".equals(line)) {
+          shellThread.exit();
+          System.exit(0);
+        } else {
+          System.out.println(line);
+        }
+      }
+    }
   }
 
   private void doSleep(long millis) {
@@ -124,6 +137,8 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
   public class ShellThread extends Thread {
 
+    ProcessBuilder processBuilder;
+    Process process;
     InputStream inputStream;
     InputStream errorStream;
     OutputStream stdOutput;
@@ -135,8 +150,8 @@ public class ScriptExecutorImpl implements ScriptExecutor {
         List<String> commands = new ArrayList<>();
         commands.add(bashUserSystemInfo.getBashEnvLocation());
 
-        ProcessBuilder pb = new ProcessBuilder(commands);
-        Process process = pb.start();
+        processBuilder = new ProcessBuilder(commands);
+        process = processBuilder.start();
 
         stdOutput = process.getOutputStream();
         inputStream = process.getInputStream();
@@ -146,6 +161,11 @@ public class ScriptExecutorImpl implements ScriptExecutor {
       } catch (Throwable th) {
         th.printStackTrace();
       }
+    }
+
+    public int exit() {
+      process.destroy();
+      return 0;
     }
   }
 }
