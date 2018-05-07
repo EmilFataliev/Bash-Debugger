@@ -116,7 +116,7 @@ while read line; do
     if kill -0 $target_pid 2> /dev/null; then
         fg %% > /dev/null
     else
-        echo "debug_end"
+        echo "exit"
         exit
     fi
 done

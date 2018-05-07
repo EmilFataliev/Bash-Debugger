@@ -6,7 +6,7 @@ public enum BashUserSystemInfo {
   INSTANCE;
 
   private final OSInfo osInfo;
-  private final String bashEnvLocation;
+  private String bashEnvLocation;
 
   private BashUserSystemInfo() {
     this.osInfo = OSInfo.getOsInfo();
@@ -21,6 +21,10 @@ public enum BashUserSystemInfo {
 
   public String getBashEnvLocation() {
     return bashEnvLocation;
+  }
+
+  public void setBashEnvLocation(String bashEnvLocation) {
+    this.bashEnvLocation = bashEnvLocation;
   }
 
   public BashUserSystemInfo getInstance() {

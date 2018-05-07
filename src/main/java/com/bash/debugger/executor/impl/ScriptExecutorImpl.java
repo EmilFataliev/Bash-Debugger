@@ -12,31 +12,29 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ScriptExecutorImpl implements ScriptExecutor {
 
-  private static final Logger logger = LoggerFactory.getLogger(ScriptExecutor.class);
+  private static final Logger log = LoggerFactory.getLogger(ScriptExecutor.class);
   private static final String TRACING_SCRIPT_NAME = "main/bash_db.sh";
 
-  public static final String ANSI_RESET = "\u001B[0m";
-  public static final String ANSI_GREEN = "\u001B[32m";
+  private static final String ANSI_RESET = "\u001B[0m";
+  private static final String ANSI_GREEN = "\u001B[32m";
+  private static final int SLEEP_MILLIS = 1000;
 
   @Override
   public void execute(final Script script) {
-    logger.debug(
+    log.debug(
         String.format(
             "Executing script %s in path %s:",
             script.getPath().toFile().getName(),
             script.getPath().toFile().getAbsolutePath()
         )
     );
-
-    final BashUserSystemInfo bashUserSystemInfo = BashUserSystemInfo.INSTANCE.getInstance();
 
     final InputStreamReader inputStreamReader = new InputStreamReader(ClassLoader
         .getSystemClassLoader()
@@ -48,8 +46,8 @@ public class ScriptExecutorImpl implements ScriptExecutor {
     try {
       traceScript = File.createTempFile("bash_db", ".sh");
       writer = new FileWriter(traceScript);
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
+    } catch (IOException ex) {
+      log.error(ex.getMessage(), ex);
     }
 
     Preconditions.checkState(Objects.requireNonNull(traceScript).setExecutable(true));
@@ -65,31 +63,32 @@ public class ScriptExecutorImpl implements ScriptExecutor {
       writer.flush();
       writer.close();
 
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
+    } catch (IOException ex) {
+      log.error(ex.getMessage(), ex);
     }
-
-    List<String> commands = new ArrayList<>();
-    commands.add(bashUserSystemInfo.getBashEnvLocation());
 
     ShellThread shellThread = new ShellThread();
     shellThread.start();
 
-    doSleep(1000);
+    doSleep(SLEEP_MILLIS);
 
-    System.out
-        .println(ANSI_GREEN + "Start debugging " + script.getPath().getFileName() + ANSI_RESET);
+    System.out.println(
+        ANSI_GREEN
+            + "Start debugging "
+            + script.getPath().getFileName()
+            + ANSI_RESET
+    );
 
     PrintWriter printWriter = new PrintWriter(shellThread.stdOutput);
 
-    logger.debug(traceScript.getAbsolutePath() + " " + script.getPath());
+    log.debug(traceScript.getAbsolutePath() + " " + script.getPath());
 
     printWriter.println(traceScript.getAbsolutePath() + " " + script.getPath());
     printWriter.flush();
 
-    InputStreamReader inputStream = new InputStreamReader(shellThread.inputStream);
-    InputStreamReader errorStream = new InputStreamReader(shellThread.errorStream);
-    InputStreamReader consoleStream = new InputStreamReader(System.in);
+    final InputStreamReader inputStream = new InputStreamReader(shellThread.inputStream);
+    final InputStreamReader errorStream = new InputStreamReader(shellThread.errorStream);
+    final InputStreamReader consoleStream = new InputStreamReader(System.in);
 
     try {
       while (shellThread.isAlive()) {
@@ -97,21 +96,21 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
         handleOut(shellThread, errorStream);
         if (consoleStream.ready()) {
-          BufferedReader bufferedReader = new BufferedReader(consoleStream);
+          final BufferedReader bufferedReader = new BufferedReader(consoleStream);
           final String cmd = bufferedReader.readLine();
 
           if ("exit".equals(cmd)) {
             shellThread.exit();
           } else {
-            PrintWriter consolePrinter = new PrintWriter(shellThread.stdOutput);
+            final PrintWriter consolePrinter = new PrintWriter(shellThread.stdOutput);
             consolePrinter.println(cmd);
             consolePrinter.flush();
             shellThread.stdOutput.flush();
           }
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception ex) {
+      log.error(ex.getMessage(), ex);
     }
 
   }
@@ -119,10 +118,10 @@ public class ScriptExecutorImpl implements ScriptExecutor {
   private void handleOut(ShellThread shellThread, InputStreamReader inputStream)
       throws IOException {
     if (inputStream.ready()) {
-      BufferedReader bufferedReader = new BufferedReader(inputStream);
+      final BufferedReader bufferedReader = new BufferedReader(inputStream);
       while (bufferedReader.ready()) {
-        String line = bufferedReader.readLine();
-        if ("debug_end".equals(line)) {
+        final String line = bufferedReader.readLine();
+        if ("exit".equals(line)) {
           shellThread.exit();
           System.exit(0);
         } else {
@@ -135,26 +134,26 @@ public class ScriptExecutorImpl implements ScriptExecutor {
   private void doSleep(long millis) {
     try {
       Thread.sleep(millis);
-    } catch (InterruptedException e) {
+    } catch (InterruptedException ignored) {
     }
   }
 
-  public class ShellThread extends Thread {
+  private class ShellThread extends Thread {
 
-    ProcessBuilder processBuilder;
-    Process process;
-    InputStream inputStream;
-    InputStream errorStream;
-    OutputStream stdOutput;
+    private ProcessBuilder processBuilder;
+    private Process process;
+    private InputStream inputStream;
+    private InputStream errorStream;
+    private OutputStream stdOutput;
 
     public void run() {
       try {
         final BashUserSystemInfo bashUserSystemInfo = BashUserSystemInfo.INSTANCE.getInstance();
 
-        List<String> commands = new ArrayList<>();
-        commands.add(bashUserSystemInfo.getBashEnvLocation());
+        processBuilder = new ProcessBuilder(Collections.singletonList(
+            bashUserSystemInfo.getBashEnvLocation()
+        ));
 
-        processBuilder = new ProcessBuilder(commands);
         process = processBuilder.start();
 
         stdOutput = process.getOutputStream();
@@ -162,14 +161,13 @@ public class ScriptExecutorImpl implements ScriptExecutor {
         errorStream = process.getErrorStream();
 
         int exitValue = process.waitFor();
-      } catch (Throwable th) {
-        th.printStackTrace();
+      } catch (Exception ex) {
+        log.error(ex.getMessage(), ex);
       }
     }
 
-    public int exit() {
+    void exit() {
       process.destroy();
-      return 0;
     }
   }
 }

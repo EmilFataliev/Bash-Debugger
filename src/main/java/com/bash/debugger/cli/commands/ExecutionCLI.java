@@ -2,15 +2,13 @@ package com.bash.debugger.cli.commands;
 
 public enum ExecutionCLI {
   RUN("run", "continue script execution"),
-  STOP("stop", "stop script execution"),
-  VARIABLES("vars", "get stack of variables"),
+  STOP("exit", "stop script execution"),
+  VARIABLES("env", "get stack of variables in script"),
+  VARIABLES_ALL("env -f", "get stack of variables"),
   HELP("help", "get all available commands");
 
   private final String command;
   private final String description;
-
-  private static final String DELIMITER = " - ";
-  private static final String TAB = "\t";
 
   ExecutionCLI(final String command, final String description) {
     this.command = command;
@@ -30,9 +28,9 @@ public enum ExecutionCLI {
 
     for (ExecutionCLI command : ExecutionCLI.values()) {
       commandsWithDescription
-          .append(TAB)
+          .append(Consts.TAB)
           .append(command.command)
-          .append(DELIMITER)
+          .append(Consts.DELIMITER)
           .append(command.description)
           .append(System.lineSeparator());
     }
