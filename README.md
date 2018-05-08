@@ -24,6 +24,7 @@ Example of simple executing:
 
 ```java -jar build/libs/bashdb-1.0-SNAPSHOT-all.jar -d [script path]```
 
+Show help: 
 ```java -jar build/libs/bashdb-1.0-SNAPSHOT-all.jar -h```
 
 ```	
