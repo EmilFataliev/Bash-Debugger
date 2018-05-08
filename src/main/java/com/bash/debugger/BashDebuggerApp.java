@@ -17,6 +17,7 @@ public class BashDebuggerApp {
 
   private static void printUsage() {
     System.out.println(ApplicationCLI.getHelp());
+    System.out.println("CLI in debug mode");
     System.out.println(ExecutionCLI.getHelp());
   }
 
@@ -53,13 +54,15 @@ public class BashDebuggerApp {
       BashUserSystemInfo.INSTANCE.getInstance().setBashEnvLocation(bashPath);
     }
 
-    final Script script = Script.withPath(scriptPath);
-    final ScriptExecutor bashScriptExecutor = new ScriptExecutorImpl();
+    if (Objects.nonNull(scriptPath)) {
+      final Script script = Script.withPath(scriptPath);
+      final ScriptExecutor bashScriptExecutor = new ScriptExecutorImpl();
 
-    try {
-      bashScriptExecutor.execute(script);
-    } catch (IOException ex) {
-      log.error(ex.getMessage(), ex);
+      try {
+        bashScriptExecutor.execute(script);
+      } catch (IOException ex) {
+        log.error(ex.getMessage(), ex);
+      }
     }
   }
 }

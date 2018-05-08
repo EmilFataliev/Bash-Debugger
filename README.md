@@ -24,6 +24,20 @@ Example of simple executing:
 
 ```java -jar build/libs/bashdb-1.0-SNAPSHOT-all.jar -d [script path]```
 
+```java -jar build/libs/bashdb-1.0-SNAPSHOT-all.jar -h```
+
+```	
+        -d - [--script-path] debug mode
+   	-b - [--bash-path] bash path
+   	-h - print CLI help
+   
+   CLI in debug mode
+   	\n - continue script execution
+   	exit - stop script execution
+   	env - get stack of variables in script
+   	env -f - get stack of variables
+   	help - get all available commands
+```
 ## License
 
 The contents of this repository are covered under the [GNU General Public License v3.0](LICENSE)

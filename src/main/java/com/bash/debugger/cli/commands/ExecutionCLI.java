@@ -1,7 +1,7 @@
 package com.bash.debugger.cli.commands;
 
 public enum ExecutionCLI {
-  RUN("run", "continue script execution"),
+  RUN("\\n", "continue script execution"),
   STOP("exit", "stop script execution"),
   VARIABLES("env", "get stack of variables in script"),
   VARIABLES_ALL("env -f", "get stack of variables"),

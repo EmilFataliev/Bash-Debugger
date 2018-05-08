@@ -2,8 +2,8 @@ package com.bash.debugger.cli.commands;
 
 public enum ApplicationCLI {
   DEBUG("-d", "[--script-path] debug mode"),
-  BASH_PATH("--bash-path",
-      "[--bash-path] bash path, determine this param if application can't do it"),
+  BASH_PATH("-b",
+      "[--bash-path] bash path"),
   HELP("-h", "print CLI help");
 
   private final String argument;
