@@ -7,6 +7,7 @@ import com.bash.debugger.executor.api.ScriptExecutor;
 import com.bash.debugger.executor.impl.ScriptExecutorImpl;
 import com.bash.debugger.script.entity.Script;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,14 +17,21 @@ public class BashDebuggerApp {
   private static final Logger log = LoggerFactory.getLogger(BashDebuggerApp.class);
 
   private static void printUsage() {
+    System.out.println("Application command line options: ");
     System.out.println(ApplicationCLI.getHelp());
-    System.out.println("CLI in debug mode");
+    System.out.println("Command line options in debug mode: ");
     System.out.println(ExecutionCLI.getHelp());
   }
 
   public static void main(String[] args) {
     String scriptPath = null;
     String bashPath = null;
+
+    log.debug(Arrays.toString(args));
+    if (args.length < 1) {
+      printUsage();
+      return;
+    }
 
     for (int i = 0; i < args.length; i++) {
       final String arg = args[i];
@@ -35,6 +43,7 @@ public class BashDebuggerApp {
       if (ApplicationCLI.DEBUG.getArgument().equals(arg)) {
         if (i + 1 < args.length) {
           scriptPath = args[++i];
+          log.debug("Script path declared ", scriptPath);
           continue;
         } else {
           printUsage();
@@ -44,6 +53,7 @@ public class BashDebuggerApp {
       if (ApplicationCLI.BASH_PATH.getArgument().equals(arg)) {
         if (i + 1 < args.length) {
           bashPath = args[++i];
+          log.debug("Bash path declared ", bashPath);
         } else {
           printUsage();
         }
