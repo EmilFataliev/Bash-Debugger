@@ -1,6 +1,6 @@
 package com.bash.debugger.executor.impl;
 
-import com.bash.debugger.env.BashUserSystemInfo;
+import com.bash.debugger.env.BashDebuggerUserSystemInfo;
 import com.bash.debugger.executor.api.ScriptExecutor;
 import com.bash.debugger.script.entity.Script;
 import com.google.common.base.Preconditions;
@@ -148,11 +148,14 @@ public class ScriptExecutorImpl implements ScriptExecutor {
 
     public void run() {
       try {
-        final BashUserSystemInfo bashUserSystemInfo = BashUserSystemInfo.INSTANCE.getInstance();
+        final BashDebuggerUserSystemInfo bashDebuggerUserSystemInfo = BashDebuggerUserSystemInfo
+            .getInstance();
 
-        processBuilder = new ProcessBuilder(Collections.singletonList(
-            bashUserSystemInfo.getBashEnvLocation()
-        ));
+        processBuilder = new ProcessBuilder(
+            Collections.singletonList(
+                bashDebuggerUserSystemInfo.getBashEnvLocation().toString()
+            )
+        );
 
         process = processBuilder.start();
 

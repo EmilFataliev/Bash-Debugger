@@ -2,11 +2,13 @@ package com.bash.debugger;
 
 import com.bash.debugger.cli.commands.ApplicationCLI;
 import com.bash.debugger.cli.commands.ExecutionCLI;
-import com.bash.debugger.env.BashUserSystemInfo;
+import com.bash.debugger.env.BashDebuggerUserSystemInfo;
 import com.bash.debugger.executor.api.ScriptExecutor;
 import com.bash.debugger.executor.impl.ScriptExecutorImpl;
 import com.bash.debugger.script.entity.Script;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -24,8 +26,8 @@ public class BashDebuggerApp {
   }
 
   public static void main(String[] args) {
-    String scriptPath = null;
-    String bashPath = null;
+    Path scriptPath = null;
+    Path bashPath = null;
 
     log.debug(Arrays.toString(args));
     if (args.length < 1) {
@@ -42,7 +44,7 @@ public class BashDebuggerApp {
 
       if (ApplicationCLI.DEBUG.getArgument().equals(arg)) {
         if (i + 1 < args.length) {
-          scriptPath = args[++i];
+          scriptPath = Paths.get(args[++i]);
           log.debug("Script path declared ", scriptPath);
           continue;
         } else {
@@ -52,7 +54,7 @@ public class BashDebuggerApp {
 
       if (ApplicationCLI.BASH_PATH.getArgument().equals(arg)) {
         if (i + 1 < args.length) {
-          bashPath = args[++i];
+          bashPath = Paths.get(args[++i]);
           log.debug("Bash path declared ", bashPath);
         } else {
           printUsage();
@@ -61,7 +63,7 @@ public class BashDebuggerApp {
     }
 
     if (Objects.nonNull(bashPath)) {
-      BashUserSystemInfo.INSTANCE.getInstance().setBashEnvLocation(bashPath);
+      BashDebuggerUserSystemInfo.getInstance().setBashEnvLocation(bashPath);
     }
 
     if (Objects.nonNull(scriptPath)) {

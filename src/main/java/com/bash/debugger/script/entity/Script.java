@@ -6,7 +6,6 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -27,31 +26,30 @@ public class Script {
 
   private static final Logger logger = LoggerFactory.getLogger(Script.class);
 
-  public static Script withPath(final String path) {
-    final Path scriptPath = Paths.get(path);
+  public static Script withPath(final Path path) {
     final ScriptHandler scriptHandler = new ScriptHandlerImpl();
     String content = null;
     final String handledContent;
 
-    Preconditions.checkState(Objects.nonNull(scriptPath));
-    Preconditions.checkState(Files.exists(scriptPath));
+    Preconditions.checkState(Objects.nonNull(path));
+    Preconditions.checkState(Files.exists(path));
 
     try {
-      content = scriptHandler.read(scriptPath);
+      content = scriptHandler.read(path);
     } catch (IOException e) {
-      logger.error("Can't read " + scriptPath.toAbsolutePath().toString());
+      logger.error("Can't read " + path.toAbsolutePath().toString());
     }
 
     Preconditions.checkState(Objects.nonNull(content));
     handledContent = scriptHandler.handleScript(content);
     try {
-      Files.write(scriptPath, handledContent.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+      Files.write(path, handledContent.getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
     } catch (IOException e) {
       logger.error(e.getMessage(), e);
     }
 
     return new Script(
-        scriptPath,
+        path,
         content,
         handledContent
     );

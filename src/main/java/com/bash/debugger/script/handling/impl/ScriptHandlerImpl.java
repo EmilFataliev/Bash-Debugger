@@ -23,8 +23,10 @@ public final class ScriptHandlerImpl implements ScriptHandler {
 
     if (content.startsWith(SHEBANG_BEGINNING)) {
       final int shebangIndex = content.indexOf(SHEBANG_BEGINNING);
-      final String shebang = content
-          .substring(shebangIndex, content.indexOf(System.lineSeparator(), shebangIndex));
+      final String shebang = content.substring(
+          shebangIndex,
+          content.indexOf(System.lineSeparator(), shebangIndex)
+      );
 
       return content.replace(shebang, SHEBANG_LINE);
     }
@@ -43,8 +45,7 @@ public final class ScriptHandlerImpl implements ScriptHandler {
     return new StringBuilder(content)
         .insert(
             SHEBANG_LINE.length() + 1,
-            TRACING_ON
-                + System.lineSeparator()
+            TRACING_ON + System.lineSeparator()
         )
         .toString();
   }
